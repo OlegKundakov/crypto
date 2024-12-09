@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: cryptos
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  datasource:
+    hikari:
+      connectionTimeout: 15000
+      maximumPoolSize: 5
+    url: 'jdbc:postgresql://${CURRENCIES_DB_URL:localhost}:${CURRENCIES_DB_PORT:5432}/postgres'
+    username: postgres
+    password: ${POSTGRES_PASSWORD:postgres_password}
+    driver-class-name: org.postgresql.Driver
+server:
+  port: 8080
+currency:
+  create-stats:
+    batch-size: 30
+  get-stats:
+    default-before-period: P30D

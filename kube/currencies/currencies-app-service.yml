@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: currencies-app-service
+  namespace: space2
+spec:
+  selector:
+    app: currencies-app-label
+  type: NodePort
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      nodePort: 32080

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: currencies-db-sts
+  namespace: space2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currencies-db-label
+  template:
+    metadata:
+      labels:
+        app: currencies-db-label
+    spec:
+      containers:
+        - name: currencies-db-container
+          image: 'postgres:alpine'
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - configMapRef:
+                name: currencies-db-configmap
+            - secretRef:
+                name: currencies-db-secret
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: currencies-db-data
+            - name: currencies-init-sql-scripts
+              mountPath: /docker-entrypoint-initdb.d
+
+      volumes:
+        - name: currencies-init-sql-scripts
+          configMap:
+            name: currencies-db-configmap
+            items:
+              - key: init.sql
+                path: init.sql
+  volumeClaimTemplates:
+    - metadata:
+        name: currencies-db-data
+      spec:
+        storageClassName: hostpath
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 10Gi

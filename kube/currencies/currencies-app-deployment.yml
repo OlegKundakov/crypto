@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencies-app-deployment
+  namespace: space2
+spec:
+  selector:
+    matchLabels:
+      app: currencies-app-label
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: currencies-app-label
+    spec:
+      containers:
+        - name: currencies-app-container
+          image: crypto/currencies:3
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: CURRENCIES_DB_URL
+              value: currencies-db-service
+          envFrom:
+            - secretRef:
+                name: currencies-db-secret
